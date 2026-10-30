@@ -1,0 +1,33 @@
+# Sistema y editores
+.DS_Store
+.idea/
+.vscode/
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+# Datos y archivos locales
+*.sqlite3
+*.sqlite3-*
+*.db
+media/
+staticfiles/
+# Node y Expo
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+*.log

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prestadores FIX&GO</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>html,body,#map{height:100%;margin:0;font:14px system-ui;background:#edf1ef}#notice{position:absolute;z-index:1000;top:8px;left:50%;transform:translateX(-50%);background:white;padding:8px;border-radius:8px;max-width:65%;box-shadow:0 2px 8px #0002}button{background:#ffd15c;color:#19313b;border:0;padding:12px;border-radius:10px;cursor:pointer} .provider{display:grid;place-items:center;background:#19313b;color:#ffd15c;border:3px solid white;border-radius:50%;font-weight:bold;box-shadow:0 2px 8px #0005}.immersive .leaflet-top.leaflet-right{top:155px}</style>
+</head><body><div id="map" aria-label="Mapa de Santiago"></div><div id="notice" role="status">Cargando mapa… Si no carga, usa las coordenadas y el listado.</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+if (window.L) {
+  const map=L.map('map',{scrollWheelZoom:false,maxBounds:[[-33.85,-71.1],[-33.1,-70.35]],minZoom:10,maxZoom:18}).setView([-33.4489,-70.6693],12);
+  const tiles=L.tileLayer('{{ tile_url|escapejs }}',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map);
+  const notice=document.getElementById('notice');
+  notice.textContent='Toca el mapa para indicar tu ubicación';
+  tiles.on('tileerror',()=>{notice.textContent='Mapa sin conexión. Puedes usar coordenadas y el listado.'});
+  let clientMarker=null, origin=null, readOnly=false;
+  const layer=L.layerGroup().addTo(map);
+  function send(data){const raw=JSON.stringify({source:'fixgo-map',...data});if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(raw);else if(origin)window.parent.postMessage(raw,origin);}
+  function point(p){return p&&Number.isFinite(p.latitude)&&Number.isFinite(p.longitude)&&p.latitude>=-33.85&&p.latitude<=-33.1&&p.longitude>=-71.1&&p.longitude<=-70.35;}
+  function update(data){
+    if(!data||data.type!=='fixgo-update')return;
+    readOnly=!!data.readOnly;
+    notice.style.display=data.immersive?'none':'block';
+    document.body.classList.toggle('immersive',!!data.immersive);
+    map.zoomControl.setPosition(data.immersive?'topright':'topleft');
+    notice.textContent=readOnly?'Tus trabajos asignados en Santiago':'Toca el mapa para indicar tu ubicación';
+    layer.clearLayers();
+    if(clientMarker){map.removeLayer(clientMarker);clientMarker=null;}
+    if(point(data.point)){
+      clientMarker=L.circleMarker([data.point.latitude,data.point.longitude],{radius:9,color:'#1679cf',fillOpacity:1}).addTo(map).bindTooltip('Ubicación seleccionada');
+      if(!map.getBounds().contains([data.point.latitude,data.point.longitude]))map.panTo([data.point.latitude,data.point.longitude]);
+    }
+    (Array.isArray(data.markers)?data.markers:[]).filter(point).forEach(p=>{
+      const box=document.createElement('div'), title=document.createElement('strong'), desc=document.createElement('p'), button=document.createElement('button');
+      title.textContent=String(p.name);desc.textContent=String(p.description);button.textContent=data.actionLabel||'Ver y solicitar';button.onclick=()=>send({type:'provider',id:p.id});
+      box.append(title,desc,button);
+      const marker=L.marker([p.latitude,p.longitude],{title:String(p.name),opacity:data.selectedId&&data.selectedId!==p.id?0.55:1}).addTo(layer);
+      if(data.immersive)marker.on('click',()=>send({type:'provider',id:p.id}));else marker.bindPopup(box);
+      if(data.selectedId===p.id)L.circleMarker([p.latitude,p.longitude],{radius:22,color:'#122f3a',weight:2,fillColor:'#ffc448',fillOpacity:0.25,interactive:false}).addTo(layer);
+    });
+  }
+  // La WebView solo carga esta página; el iframe acepta únicamente a su padre.
+  window.fixgoUpdate=update;
+  window.addEventListener('message',e=>{if(e.source!==window.parent||e.source===window)return;origin=e.origin;update(e.data);});
+  map.on('click',e=>{const p={latitude:+e.latlng.lat.toFixed(5),longitude:+e.latlng.lng.toFixed(5)};if(!readOnly&&point(p))send({type:'point',point:p});});
+  send({type:'ready'});
+}
+</script></body></html>

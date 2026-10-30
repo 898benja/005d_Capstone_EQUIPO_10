@@ -1,0 +1,10 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>{{ title }}</h1>
+<p>Solicitud #{{ item.service_request_id }} · {{ item.get_status_display }}</p>
+<h2>Motivo indicado por el cliente</h2><p>{{ item.reason }}</p>
+<h2>Fotos adjuntas por el prestador</h2>
+{% for photo in photos %}<figure><img src="data:image/jpeg;base64,{{ photo.image }}" alt="{{ photo.caption }}" style="max-width:500px;width:100%"><figcaption>{{ photo.caption }}</figcaption></figure>{% empty %}<p>No hay fotos adjuntas.</p>{% endfor %}
+<p>Verifica los antecedentes con ambas partes. Una foto o una denuncia no demuestra por sí sola un incumplimiento. Aprobar registra un reembolso simulado completo y una alerta; con tres alertas se deshabilita la cuenta sin borrar el historial.</p>
+{% if item.status == 'OPEN' %}<form method="post">{% csrf_token %}{{ form.as_p }}<input type="submit" value="Registrar resolución"></form>{% else %}<p>Resolución: {{ item.review_note }}</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIX&GO</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header class="glass-header">
+            <div class="logo">FIX&GO</div>
+            <nav id="nav-links">
+                <!-- Inyectado por JS -->
+            </nav>
+        </header>
+
+        <main id="main-content" class="container">
+            <!-- Contenido inyectado por JS -->
+        </main>
+    </div>
+
+    <!-- Template: Login -->
+    <template id="tpl-login">
+        <div class="login-wrapper">
+            <div class="login-card glass-panel">
+                <div class="login-header">
+                    <h2>Bienvenido de vuelta</h2>
+                    <p>Ingresa para encontrar a tu experto</p>
+                </div>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" required placeholder="ejemplo@fixandgo.cl">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                    <div id="login-error" class="error-message"></div>
+                </form>
+
+                <div class="demo-hints">
+                    <p>Visor web previo. Para el flujo completo usa la app Expo de la carpeta mobile.</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template: Dashboard -->
+    <template id="tpl-dashboard">
+        <div class="dashboard fade-in">
+            <div class="welcome-banner glass-panel">
+                <h2>Hola, <span id="user-name" class="highlight"></span> 👋</h2>
+                <p>Tu red de servicios de confianza en Santiago</p>
+            </div>
+
+            <section class="mt-4">
+                <div class="section-header">
+                    <h3>Prestadores Disponibles</h3>
+                </div>
+                <div id="providers-list" class="grid-container">
+                    <div class="loading">Cargando prestadores...</div>
+                </div>
+            </section>
+
+            <section class="mt-4 pb-4">
+                <div class="section-header">
+                    <h3>Mis Solicitudes Activas</h3>
+                </div>
+                <div id="requests-list" class="grid-container">
+                    <div class="loading">Cargando solicitudes...</div>
+                </div>
+            </section>
+        </div>
+    </template>
+
+    <!-- Template: Provider Card -->
+    <template id="tpl-provider-card">
+        <div class="card provider-card glass-panel hover-lift">
+            <div class="card-header">
+                <h4 class="provider-name"></h4>
+                <span class="badge verified">✓ Verificado</span>
+            </div>
+            <p class="provider-desc text-muted"></p>
+            <div class="provider-meta mt-2">
+                <span class="tag experience"></span>
+                <span class="tag phone"></span>
+            </div>
+            <div class="provider-categories mt-2"></div>
+        </div>
+    </template>
+
+    <!-- Template: Request Card -->
+    <template id="tpl-request-card">
+        <div class="card request-card glass-panel hover-lift">
+            <div class="card-header">
+                <h4 class="request-category"></h4>
+                <span class="badge status"></span>
+            </div>
+            <p class="request-desc mt-2 text-muted"></p>
+            <div class="request-details mt-2">
+                <p><strong>De:</strong> <span class="client-name"></span></p>
+                <p><strong>Para:</strong> <span class="provider-name"></span></p>
+            </div>
+            <div class="request-meta mt-2">
+                <span class="tag commune"></span>
+                <span class="date text-muted text-sm"></span>
+            </div>
+        </div>
+    </template>
+
+    <script src="app.js"></script>
+</body>
+</html>
