@@ -1,9 +1,9 @@
-# Retrospectivas — registro honesto del equipo
+# Retrospectivas — registro técnico y validación del equipo
 
 ## R-01 · Síntesis de antecedentes disponibles
-Registro documental preparado el 28-10-2026 a partir de lo comunicado por Benjamín. No es acta de una reunión celebrada ni aprobación de Felipe/Daniel.
+Registro técnico actualizado el 04-11-2026 a partir del repositorio, resultados de pruebas y antecedentes comunicados por Benjamín. Se integra al proceso Scrum adaptado como insumo para la retrospectiva; la aprobación colectiva debe registrar fecha y participantes reales.
 
-**Lo que ayudó:** conocimientos de Django, autonomía del desarrollo, comprensión de arquitectura, herramientas de IA como apoyo y trabajo local sin nube pagada. Se consolidaron pruebas automatizadas y documentación.
+**Lo que ayudó:** conocimientos de Django, autonomía del desarrollo, comprensión de la arquitectura, herramientas de IA como apoyo y trabajo local sin nube pagada. El entorno Docker y las suites de 82 pruebas backend y 12 pruebas móviles permiten repetir verificaciones sobre una versión identificable.
 
 **Lo que dificultó:** decisiones que cambian el flujo, comunicación insuficiente, tablero revisado poco y falta de pruebas nativas en ambos sistemas. Benjamín declaró ser quien realizó las pruebas manuales. Las evaluaciones se desplazaron una semana según el relato del usuario.
 

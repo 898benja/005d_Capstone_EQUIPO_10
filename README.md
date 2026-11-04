@@ -11,7 +11,7 @@ FIX&GO es un MVP académico que conecta clientes de Santiago con prestadores de 
 
 ## Estado del proyecto
 
-El recorrido principal del MVP está implementado en React Native/Expo y Django REST Framework. Incluye roles cliente y prestador, mapa de Santiago, cotizaciones, materiales, Webpay Plus de integración sin cobros reales, chat posterior al pago, evidencias, valoración, reclamos y reembolsos de prueba. La versión incluida corresponde al commit [`6e59671`](https://github.com/898benja/fix-and-go/commit/6e59671f82435891bd01732fbdacf599fa6c8b6a) del repositorio de desarrollo.
+El recorrido principal del MVP está implementado en React Native/Expo y Django REST Framework. Incluye roles cliente y prestador, mapa de Santiago, cotizaciones, materiales, Webpay Plus de integración sin cobros reales, chat posterior al pago, evidencias, valoración, reclamos y reembolsos de prueba. La versión incluida corresponde al commit [`c54c077`](https://github.com/898benja/fix-and-go/commit/c54c077) del repositorio de desarrollo.
 
 ## Entregables evaluables
 

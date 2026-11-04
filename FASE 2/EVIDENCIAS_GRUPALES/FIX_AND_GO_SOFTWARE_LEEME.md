@@ -3,7 +3,7 @@
 Copia del código publicado el **4 de noviembre de 2026** para revisión del equipo y del docente.
 
 - **Repositorio de desarrollo:** [898benja/fix-and-go](https://github.com/898benja/fix-and-go).
-- **Versión incluida:** [6e59671f82435891bd01732fbdacf599fa6c8b6a](https://github.com/898benja/fix-and-go/commit/6e59671f82435891bd01732fbdacf599fa6c8b6a).
+- **Versión incluida:** [c54c077](https://github.com/898benja/fix-and-go/commit/c54c077).
 - **Código:** [FIX_AND_GO_SOFTWARE](FIX_AND_GO_SOFTWARE/).
 - **Instalación y ejecución:** [README](FIX_AND_GO_SOFTWARE/README.md) y [manual técnico](FIX_AND_GO_SOFTWARE/docs/MANUAL_TECNICO.md).
 - **Visión, backlogs, retrospectivas, requisitos y pruebas:** [índice de entregables](FIX_AND_GO_SOFTWARE/docs/ENTREGABLES.md).

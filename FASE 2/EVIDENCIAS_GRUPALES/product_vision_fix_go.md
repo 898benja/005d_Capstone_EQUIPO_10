@@ -66,7 +66,7 @@ Para comprender el impacto integral de la solución **Fix&Go**, se diferencian l
 
 ### Beneficiario / Rol de Administración y Plataforma (Gobernanza Fix&Go)
 
-* **Rol y uso:** Representado por la lógica central del servidor y la gestión operativa del negocio. Administra la integridad transaccional de las órdenes de pago (`PaymentOrder`), el cálculo automatizado de impuestos y el modelo de sostenibilidad financiera, el cual contempla una retención integrada del **30% de margen de ganancia para la plataforma Fix&Go** (destinado a operación, escalamiento y financiamiento de bonos de incentivo) y la liquidación del **70% restante para el prestador**, además de la asignación automatizada de bonificaciones por trabajos semanales.
+* **Rol y uso:** Representado por la lógica central del servidor y la gestión operativa. Administra la integridad transaccional de las órdenes de pago (`PaymentOrder`) y calcula la comisión del **30% sobre el valor del servicio**. El prestador recibe el 70% del servicio más el 100% de los materiales aprobados. Los montos del MVP son demostrativos y no constituyen liquidaciones reales.
 
 * **Beneficio:** Garantiza la viabilidad económica y comercial del servicio, incentiva la productividad de los prestadores mediante estímulos económicos y previene la fuga de usuarios reteniendo la apertura del canal de comunicación directa (`ServiceMessage`) hasta la confirmación del pago.
 
@@ -74,16 +74,16 @@ Para comprender el impacto integral de la solución **Fix&Go**, se diferencian l
 
 ### Propuesta de Valor
 
-**Fix&Go** transforma la contratación de reparaciones y servicios para el hogar en una experiencia digital controlada, transparente y transaccionalmente segura. A través de una arquitectura centralizada de monolito modular, la plataforma unifica el recorrido entre el cliente y el prestador en cinco hitos verificables: solicitud geolocalizada por comuna, cotización formal, aceptación protegida contra condiciones de carrera, aprobación granular de materiales adicionales y liquidación final inmutable. Además, incorpora un modelo de retención sostenible del 30% complementado con un esquema de bonos por trabajos semanales que fideliza a los técnicos y asegura un alto estándar de servicio.
+**Fix&Go** estructura la contratación de reparaciones del hogar mediante búsqueda geográfica, cotización, aprobación de materiales, pago de prueba, comunicación protegida y evidencia del trabajo. El backend conserva el estado del servicio y calcula los montos; la aplicación presenta a cada rol las acciones que corresponden. La comisión del 30% se aplica únicamente al valor del servicio y los materiales se asignan íntegramente al prestador.
 
 ### Declaración de Visión del Producto (*Product Vision Statement*)
 
 > **Para** los propietarios y residentes de hogares, así como para los especialistas técnicos de gasfitería, electricidad y gas,
 > **que enfrentan** la informalidad tarifaria, la desconfianza operativa, los cobros imprevistos de materiales en terreno y la falta de incentivos estables en las reparaciones domiciliarias,
 > **Fix&Go** es una plataforma móvil e infraestructura transaccional de servicios para el hogar
-> **que** estructura y resguarda todo el ciclo de contratación —desde la búsqueda por comuna y la cotización formal, hasta la aprobación transparente de insumos extras, el cálculo inmutable de pago con margen institucional del 30% y un sistema de bonos por productividad semanal—,
+> **que** estructura el ciclo desde la búsqueda y cotización hasta la aprobación de materiales, pago de prueba, chat protegido, evidencia y valoración,
 > **a diferencia de** los directorios informales, redes sociales o acuerdos verbales desconectados donde no existe control de estados, protección contra la desintermediación ni estímulos económicos para los trabajadores,
-> **nuestro producto** garantiza integridad absoluta en cada transición mediante operaciones atómicas en el servidor, congela el desglose financiero final sin posibilidad de manipulación y asegura un ecosistema comercial rentable, altamente motivador y libre de fricciones para ambas partes.
+> **nuestro producto** aplica reglas de transición y cálculos en el servidor, conserva evidencia del recorrido y reduce los acuerdos informales que no quedan registrados.
 
 ## 5. ALCANCE Y DIFERENCIADORES DEL MVP
 
@@ -95,8 +95,8 @@ Para la presente etapa del proyecto Capstone en Duoc UC, el alcance funcional y 
 2. **Gestión Transparente de Materiales Adicionales y Bloqueo Preventivo de Checkout:**
    Capacidad del prestador para declarar insumos extras requeridos durante la intervención técnica (`MaterialExtra`). La API bloquea cualquier intento de pasar al pago final (*checkout*) mientras existan materiales en estado pendiente de decisión, exigiendo que el cliente apruebe o rechace explícitamente cada ítem antes de consolidar el cobro.
 
-3. **Liquidación Financiera Inmutable en Servidor (*Snapshot*) y Modelo de Ganancia (30%):**
-   Cálculo centralizado en el backend de Django que suma el valor del servicio aceptado más los materiales aprobados, congelando una copia inmutable (*snapshot*) en `PaymentOrder` que estructura el margen comercial del **30% para Fix&Go** (soporte operativo y fondo de bonos semanales) y el **70% para el prestador**. El cierre se ejecuta mediante una simulación controlada (`DEMO_PAID`) con comprobante académico sin validez tributaria.
+3. **Liquidación Financiera Inmutable en Servidor y Comisión de Servicio:**
+   Django suma el valor del servicio y los materiales aprobados y conserva un *snapshot* en `PaymentOrder`. La comisión de Fix&Go equivale al 30% del servicio; el prestador recibe el 70% del servicio más la totalidad de los materiales. El cierre utiliza Webpay en ambiente de integración o una simulación controlada y genera un comprobante académico sin validez tributaria.
 
 4. **Seguridad en Tres Capas y Control Anti-Fuga:**
    Protección integral compuesta por: (1) autenticación mediante tokens con expiración de $24\text{ horas}$ y aislamiento por propiedad donde terceros no autorizados reciben `HTTP 404`; (2) validaciones de reglas de negocio y cobertura en la API REST; y (3) restricciones de unicidad e integridad referencial en la base de datos SQLite. Adicionalmente, los teléfonos permanecen ocultos en el catálogo público y el chat interno (`ServiceMessage`) se habilita exclusivamente tras aprobar el pago de demostración.
