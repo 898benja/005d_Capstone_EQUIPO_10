@@ -39,7 +39,7 @@ def require_demo():
 
 
 def editable(sr):
-    if sr.status not in ['ACCEPTED', 'IN_PROGRESS', 'COMPLETED']:
+    if sr.status != 'ACCEPTED':
         raise StateConflict('Primero debe existir un servicio aceptado.')
     if PaymentOrder.objects.filter(service_request=sr).exists():
         raise StateConflict('La liquidación ya está congelada; no se pueden modificar materiales.')
@@ -98,6 +98,8 @@ def amounts(sr):
 def checkout(pk, user):
     require_demo()
     sr = owned(pk, user, client=True, lock=True)
+    if sr.status not in ['ACCEPTED', 'IN_PROGRESS', 'COMPLETED']:
+        raise StateConflict('La solicitud está cancelada o todavía no tiene una cotización aceptada.')
     previous = PaymentOrder.objects.filter(service_request=sr).first()
     if previous:
         return previous, False
@@ -116,12 +118,16 @@ def demo_result(pk, user, outcome):
     order = PaymentOrder.objects.filter(service_request=sr).first()
     if order is None:
         raise NotFound('Primero crea la liquidación.')
+    if order.mode != 'DEMO':
+        raise StateConflict('Este pago debe confirmarse en Webpay de integración.')
     if order.status == 'DEMO_REFUNDED':
         raise StateConflict('Este pago ya fue reembolsado y no puede volver a cobrarse.')
     if order.status == 'DEMO_PAID':
         if outcome != 'approved':
             raise StateConflict('Una aprobación confirmada no puede convertirse en rechazo.')
         return order
+    if sr.status != 'ACCEPTED':
+        raise StateConflict('Solo se puede pagar una solicitud aceptada y vigente.')
     if not DemoCard.objects.filter(user=user).exists():
         raise StateConflict('Guarda primero una tarjeta de demostración en Mi perfil.')
     order.snapshot={**order.snapshot,'card':{'brand':'DEMO','last4':'4242'}}

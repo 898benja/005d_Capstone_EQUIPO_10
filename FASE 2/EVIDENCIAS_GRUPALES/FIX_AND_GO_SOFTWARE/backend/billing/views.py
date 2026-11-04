@@ -39,13 +39,14 @@ def decision(request, pk, material_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def summary(request, pk):
+    from .webpay import enabled
     sr = workflow.owned(pk, request.user)
     order = PaymentOrder.objects.filter(service_request=sr).first()
     if order:
-        return Response({**PaymentRead(order).data, 'demo_enabled': settings.DEBUG and settings.PAYMENTS_DEMO_ENABLED})
+        return Response({**PaymentRead(order).data, 'webpay_enabled': enabled(), 'demo_enabled': settings.DEBUG and settings.PAYMENTS_DEMO_ENABLED})
     values, pending = workflow.amounts(sr)
     return Response({**values, 'currency': 'CLP', 'mode': 'DEMO', 'status': 'DRAFT',
-                     'has_pending_materials': pending, 'fiscal_document': False,
+                     'has_pending_materials': pending, 'fiscal_document': False, 'webpay_enabled': enabled(),
                      'demo_enabled': settings.DEBUG and settings.PAYMENTS_DEMO_ENABLED})
 
 

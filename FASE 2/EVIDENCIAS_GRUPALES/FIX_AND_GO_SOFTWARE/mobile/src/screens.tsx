@@ -18,6 +18,8 @@ import { DemoWallet } from './wallet';
 import { EvidencePanel } from './evidence';
 import { DisputePanel } from './dispute';
 import { ProfilePhoto } from './profile-photo';
+import { serviceProgress } from './service-progress';
+import { useRefresh } from './use-refresh';
 export { Explore } from './explore-map';
 export type Run = (job: () => Promise<void>) => Promise<void>;
 export const money = (value: number) => `$${value.toLocaleString("es-CL")}`;
@@ -222,7 +224,7 @@ export function NewRequest({
           onChangeText={setAddress}
         />
         <Text style={s.body}>
-          La dirección se comparte con el prestador asignado. Enviar esta
+          La dirección se comparte con el prestador asignado después del pago. No incluyas teléfonos ni correos en la descripción. Enviar esta
           solicitud no confirma un precio ni realiza un pago.
         </Text>
         <Button
@@ -400,6 +402,7 @@ export function Detail({
   const confirm = (title: string, route: string) =>
     setPendingAction({ title, route });
   const client = session.user.role === "CLIENT";
+  const refreshError = useRefresh(refresh, !!item && !['CANCELLED', 'COMPLETED'].includes(item.status), busy);
   if (!item)
     return (
       <>
@@ -414,6 +417,12 @@ export function Detail({
   return (
     <>
       <Text style={s.heading}>Solicitud #{id}</Text>
+      <Card>
+        <Text style={s.badge}>{item.status === 'CANCELLED' ? 'Solicitud cerrada' : `Paso ${serviceProgress(item.status, billing?.bill.status, client).step} de 5`}</Text>
+        <Text style={s.title}>{serviceProgress(item.status, billing?.bill.status, client).title}</Text>
+        <Text style={s.body}>{serviceProgress(item.status, billing?.bill.status, client).detail}</Text>
+        {!!refreshError && <Text accessibilityRole="alert" style={s.body}>{refreshError}</Text>}
+      </Card>
       {pendingAction && (
         <Modal
           transparent
@@ -466,6 +475,7 @@ export function Detail({
           {item.provider_name} · {item.commune_name}
         </Text>
         {!!item.address && <Text style={s.body}>{item.address}</Text>}
+        {!client && !item.address && item.status !== 'CANCELLED' && <Text style={s.body}>Verás la dirección exacta después del pago. Por ahora puedes cotizar con la descripción y la comuna.</Text>}
       </Card>
       {item.quote && (
         <Card>
@@ -537,7 +547,7 @@ export function Detail({
           />
         </Card>
       )}
-      {client && ["PENDING", "QUOTED"].includes(item.status) && (
+      {client && (["PENDING", "QUOTED"].includes(item.status) || (item.status === 'ACCEPTED' && !['DEMO_PAID', 'DEMO_REFUNDED'].includes(billing?.bill.status || ''))) && (
         <Button
           secondary
           label="Cancelar solicitud"
@@ -559,7 +569,7 @@ export function Detail({
           onPress={() => confirm("¿El servicio está terminado?", "complete")}
         />
       )}
-      <EvidencePanel key={id} id={id} session={session} status={item.status} run={run} busy={busy}/>
+      {['IN_PROGRESS', 'COMPLETED'].includes(item.status) && <EvidencePanel key={id} id={id} session={session} status={item.status} run={run} busy={busy}/>}
       {billing && <BillingPanel id={id} session={session} status={item.status} data={billing} busy={busy} run={run} refresh={refresh} />}
       {billing&&['DEMO_PAID','DEMO_REFUNDED'].includes(billing.bill.status)&&<DisputePanel id={id} session={session} run={run} busy={busy} refresh={refresh}/>}
       {rating && (

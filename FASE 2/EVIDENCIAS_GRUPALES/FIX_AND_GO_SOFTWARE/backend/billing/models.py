@@ -71,6 +71,15 @@ class ServiceMessage(models.Model):
         ordering = ['id']
 
 
+class WebpayAttempt(models.Model):
+    """Only integration tokens, never card data. Each retry has a distinct order."""
+    order = models.ForeignKey(PaymentOrder, on_delete=models.PROTECT, related_name='webpay_attempts')
+    buy_order = models.CharField(max_length=26, unique=True)
+    token = models.CharField(max_length=128, unique=True)
+    finished = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class ServiceDispute(models.Model):
     """Un reclamo no sanciona: exige una resolución administrativa registrada."""
     service_request = models.OneToOneField('services.ServiceRequest', on_delete=models.PROTECT, related_name='dispute')

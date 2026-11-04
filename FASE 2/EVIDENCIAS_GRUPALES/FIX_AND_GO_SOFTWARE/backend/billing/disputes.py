@@ -70,6 +70,17 @@ def resolve(dispute_id,reviewer,decision,note):
         order=PaymentOrder.objects.filter(service_request_id=item.service_request_id,status='DEMO_PAID').first()
         if not order:
             raise StateConflict('No existe un pago aprobado para reembolsar.')
+        if order.mode == 'WEBPAY_INT':
+            from .webpay import call, GatewayUnavailable
+            attempt = order.webpay_attempts.filter(finished=True).order_by('-id').first()
+            if not attempt:
+                raise StateConflict('No existe una transacción de integración verificable.')
+            current = call('GET', '/' + attempt.token)
+            if current.get('status') not in ['REVERSED', 'NULLIFIED']:
+                result = call('POST', '/' + attempt.token + '/refunds', {'amount': order.total})
+                if (result.get('type') not in ['REVERSED', 'NULLIFIED'] or
+                        (result.get('type') == 'NULLIFIED' and result.get('response_code') != 0)):
+                    raise GatewayUnavailable()
         order.status='DEMO_REFUNDED';order.refunded_at=timezone.now()
         order.save(update_fields=['status','refunded_at'])
         provider_id=item.service_request.provider_id

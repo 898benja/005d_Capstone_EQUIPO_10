@@ -9,10 +9,10 @@ import {
   View,
 } from "react-native";
 export const colors = {
-  ink: "#122F3A",
-  muted: "#60727A",
+  ink: "#171717",
+  muted: "#535353",
   yellow: "#FFC448",
-  background: "#F4F6F5",
+  background: "#F6F6F6",
   border: "#DCE4E3",
   white: "#FFFFFF",
 };
@@ -42,9 +42,9 @@ export function Button({
       ]}
     >
       {busy ? (
-        <ActivityIndicator color={colors.ink} />
+        <ActivityIndicator color={secondary ? colors.ink : colors.white} />
       ) : (
-        <Text style={s.buttonText}>{label}</Text>
+        <Text style={[s.buttonText, secondary && {color: colors.ink}]}>{label}</Text>
       )}
     </Pressable>
   );
@@ -132,14 +132,14 @@ export const s = StyleSheet.create({
     color: colors.ink,
   },
   button: {
-    backgroundColor: colors.yellow,
+    backgroundColor: colors.ink,
     minHeight: 50,
     padding: 14,
     borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: { fontWeight: "700", fontSize: 15, color: colors.ink },
+  buttonText: { fontWeight: "700", fontSize: 16, color: colors.white },
   secondary: { backgroundColor: "#EAF0EF" },
   wrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   chip: {

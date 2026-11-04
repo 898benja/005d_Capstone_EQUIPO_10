@@ -166,7 +166,7 @@ class ServiceRequestListSerializer(serializers.ModelSerializer):
 class ServiceRequestDetailSerializer(ServiceRequestListSerializer):
     """Detalle de solicitud — incluye dirección solo para partes autorizadas.
 
-    BE-08: dirección visible solo para cliente, prestador asignado o staff.
+    La dirección exacta del cliente solo se revela al prestador tras el pago.
     """
 
     address = serializers.SerializerMethodField()
@@ -190,8 +190,12 @@ class ServiceRequestDetailSerializer(ServiceRequestListSerializer):
         if not request:
             return None
         user = request.user
-        if user and (user.id == obj.client_id or user.id == obj.provider_id or user.is_staff):
+        if user and (user.id == obj.client_id or user.is_staff):
             return obj.address
+        if user and user.id == obj.provider_id:
+            from billing.models import PaymentOrder
+            if PaymentOrder.objects.filter(service_request=obj, status='DEMO_PAID').exists():
+                return obj.address
         return None
 
     def get_quote(self, obj):

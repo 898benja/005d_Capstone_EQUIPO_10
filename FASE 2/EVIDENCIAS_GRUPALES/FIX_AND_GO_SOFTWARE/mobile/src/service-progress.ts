@@ -1,0 +1,11 @@
+/** A single explanation of the next step for each role and server state. */
+export function serviceProgress(status: string, payment: string | undefined, client: boolean) {
+  if (payment === 'DEMO_REFUNDED') return {step: 5, title: 'Pago reembolsado', detail: 'El reembolso de prueba está registrado. Puedes consultar el comprobante y la resolución del reclamo.'};
+  if (status === 'CANCELLED') return {step: 0, title: 'Solicitud cancelada', detail: 'No se realizará este trabajo. Puedes buscar otro prestador desde Inicio.'};
+  if (status === 'PENDING') return {step: 1, title: client ? 'Esperando cotización' : 'Prepara la cotización', detail: client ? 'El prestador revisará tu solicitud. El estado se actualiza automáticamente.' : 'Describe el trabajo y su precio. El cliente debe aceptar antes de continuar.'};
+  if (status === 'QUOTED') return {step: 2, title: client ? 'Revisa la propuesta' : 'Esperando al cliente', detail: client ? 'Revisa qué incluye y cuánto cuesta. Aceptar todavía no realiza un pago.' : 'Puedes retirar la propuesta si necesitas corregirla antes de que sea aceptada.'};
+  if (status === 'ACCEPTED' && payment !== 'DEMO_PAID') return {step: 3, title: client ? 'Revisa materiales y paga' : 'Prepara los materiales', detail: client ? 'Aprueba o rechaza los adicionales y confirma el total. El chat se abre después del pago de prueba.' : 'Propón los materiales antes de que el cliente confirme el total. Si no hacen falta, el cliente puede pagar solo el servicio.'};
+  if (status === 'ACCEPTED') return {step: 4, title: 'Pago aprobado · chat disponible', detail: client ? 'Coordina los detalles por el chat. El prestador marcará el inicio del trabajo.' : 'Coordina la visita por el chat y pulsa Iniciar servicio cuando comiences.'};
+  if (status === 'IN_PROGRESS') return {step: 4, title: 'Trabajo en curso', detail: client ? 'Revisa las fotos antes de confirmar el resultado. Si existe un problema, abre un reclamo.' : 'Adjunta fotos del resultado. El cliente será quien confirme que el trabajo está terminado.'};
+  return {step: 5, title: 'Trabajo terminado', detail: client ? 'Gracias por confirmar. Valora tu experiencia y conserva el comprobante.' : 'El cliente confirmó el resultado. El historial conserva fotos, conversación y comprobante.'};
+}

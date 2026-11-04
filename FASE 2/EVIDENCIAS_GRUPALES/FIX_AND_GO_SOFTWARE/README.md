@@ -4,6 +4,8 @@ App académica de servicios para el hogar en Santiago. Cliente React Native + Ex
 
 ## Documentación del equipo
 
+La [guía del flujo y pagos de prueba del 4 de noviembre](docs/FLUJO_MVP_2026-11-04.md) documenta Webpay Plus de integración, el servicio demo de $500, pruebas ejecutadas y el guion manual. No se cobra dinero real.
+
 El [índice de entregables](docs/ENTREGABLES.md) reúne Product Vision, Product Backlog, Sprint Backlog, retrospectivas, requisitos no funcionales, pruebas, Docker y manual técnico. Incluye responsables propuestos y distingue implementación de aceptación pendiente.
 
 Para Docker: consultar [manual técnico](docs/MANUAL_TECNICO.md), puertos locales 18000/18090 y volumen aislado.
@@ -17,7 +19,7 @@ Registro e inicio de sesión → perfil reutilizable → mapa de prestadores →
 - Solicitudes y cotizaciones con validaciones, historial básico y transiciones controladas.
 - El backend calcula el total; materiales pendientes bloquean el checkout y materiales rechazados quedan excluidos.
 - Una sola orden por solicitud, snapshot de importes, rechazo y reintento sin duplicar órdenes.
-- Teléfonos ocultos en el catálogo; conversación posterior al pago demo, con actualización manual.
+- Teléfonos ocultos en el catálogo y dirección exacta oculta al prestador antes del pago; conversación posterior al pago, con actualización automática cada cinco segundos.
 - Tokens con expiración de 24 horas. SecureStore en dispositivos; memoria en la vista web.
 - Inicio del prestador con resumen, trabajos recientes, clientes atendidos y mapa privado de sus solicitudes.
 - Mapa Leaflet/OpenStreetMap con búsqueda por radio, puntos de atención voluntariamente publicados y ubicación privada de la solicitud. Requiere Internet para cargar cartografía.
@@ -25,7 +27,7 @@ Registro e inicio de sesión → perfil reutilizable → mapa de prestadores →
 - Fotos privadas JPEG/PNG/WebP: hasta 10 por trabajo, 2 MB y 16 MP por archivo; se normalizan a JPEG sin EXIF.
 - Administración de operaciones en modo consulta; los reclamos tienen una pantalla específica de revisión con fundamento obligatorio.
 
-**Fuera del MVP:** pasarela bancaria y tokenización reales, boletas tributarias, transferencias al prestador, llamadas, notificaciones push, GPS en vivo, geocodificación de direcciones, verificación profesional y distribución en tiendas. No hay cuenta de comercio ni proveedor de pagos elegido. La tarjeta guardada es un identificador ficticio; la app no solicita PAN ni CVV.
+**Pagos:** Webpay Plus está integrado exclusivamente con el entorno de pruebas de Transbank; también existe simulación local. **Fuera del MVP:** cobros y tokenización bancarios reales, boletas tributarias, transferencias al prestador, llamadas, notificaciones push, GPS en vivo, geocodificación de direcciones, verificación profesional y distribución en tiendas. No hay cuenta de comercio de producción. La tarjeta guardada es un identificador ficticio; FIX&GO no solicita PAN ni CVV, y los datos de prueba se introducen en el formulario oficial de Transbank.
 
 Consulta la [auditoría y guía de QA vigente](docs/AUDITORIA_Y_QA_2026_10_28.md). Los informes anteriores describen versiones históricas; este recorrido reemplaza el cobro posterior al término del servicio.
 

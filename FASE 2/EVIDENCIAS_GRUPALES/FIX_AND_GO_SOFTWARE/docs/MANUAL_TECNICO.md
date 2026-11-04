@@ -39,7 +39,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8000 npm run web
 `DJANGO_DEBUG=true` y `PAYMENTS_DEMO_ENABLED=true` son ambos necesarios para simular pagos. En móvil físico cambiar localhost por IP LAN del Mac y permitir esa IP en ALLOWED_HOSTS. Mantener teléfono y Mac en red accesible; no publicar el servidor de desarrollo en Internet.
 
 ## 5. Docker para demostración web
-Prerrequisitos: Docker Desktop activo y Compose v2. Desde la raíz, crear `.env.docker` con `DJANGO_SECRET_KEY` aleatorio de al menos50 caracteres. Se puede generar con `python3 -c "import secrets; print(secrets.token_urlsafe(48))"`. Guardar el resultado localmente, no en commits.
+Prerrequisitos: Docker Desktop activo y Compose v2. Desde la raíz, copiar `docker.env.example` como `.env.docker` y reemplazar `DJANGO_SECRET_KEY` por un valor aleatorio de al menos 50 caracteres. Se puede generar con `python3 -c "import secrets; print(secrets.token_urlsafe(48))"`. Guardar el resultado localmente, no en commits.
 
 ```sh
 docker compose --env-file .env.docker config --quiet
@@ -48,6 +48,8 @@ docker compose --env-file .env.docker ps
 ```
 
 App web: http://localhost:18090 · API/administración: http://localhost:18000 · salud: http://localhost:18000/api/v1/health/.
+
+Compose habilita Webpay Plus exclusivamente en integración. El callback vuelve a `http://localhost:18000/api/v1/webpay/return/` y el resultado enlaza a la aplicación en el puerto 18090. No utiliza credenciales comerciales ni admite cobros reales.
 
 Los puertos se limitan a127.0.0.1. SQLite y fotos persisten en volumen `fixgo_data`, separado de tu base local. La API ejecuta migraciones antes de iniciar; frontend espera healthcheck. Es una configuración de desarrollo (Django runserver y Metro), no producción. No presupone QR nativo desde Docker; usar ejecución LAN local para teléfono.
 

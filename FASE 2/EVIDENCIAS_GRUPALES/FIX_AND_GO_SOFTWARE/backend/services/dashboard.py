@@ -1,5 +1,5 @@
 """Resumen privado del prestador: nunca publica un directorio de domicilios."""
-from django.db.models import Count
+from django.db.models import Count, Exists, OuterRef
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from accounts.permissions import IsProvider
@@ -9,7 +9,9 @@ from .models import ServiceRequest
 @api_view(['GET'])
 @permission_classes([IsProvider])
 def provider_dashboard(request):
-    jobs = ServiceRequest.objects.filter(provider=request.user)
+    from billing.models import PaymentOrder
+    jobs = ServiceRequest.objects.filter(provider=request.user).annotate(
+        location_unlocked=Exists(PaymentOrder.objects.filter(service_request_id=OuterRef('pk'), status='DEMO_PAID')))
     counts = dict(jobs.values_list('status').annotate(total=Count('id')))
     # Límites explícitos mantienen liviano el inicio; Solicitudes conserva el historial paginado.
     recent = list(jobs.select_related('client', 'category', 'commune')[:20])
@@ -23,7 +25,8 @@ def provider_dashboard(request):
             'id': job.id, 'client_name': job.client.get_full_name() or 'Cliente',
             'category_name': job.category.name, 'commune_name': job.commune.name,
             'status': job.status, 'status_display': job.get_status_display(),
-            'latitude': job.latitude, 'longitude': job.longitude,
+            'latitude': job.latitude if job.location_unlocked else None,
+            'longitude': job.longitude if job.location_unlocked else None,
         } for job in recent],
         'customers': [{
             'id': row['client_id'],

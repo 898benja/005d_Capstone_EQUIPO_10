@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FIX&amp;GO · Pago de prueba</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f6f6f6;color:#171717;font:16px/1.6 system-ui,-apple-system,sans-serif}
+    header{background:white;border-bottom:1px solid #e5e5e5;padding:20px max(24px,calc((100% - 1040px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{font-size:26px;font-weight:900;letter-spacing:-1px}.brand span{color:#ae7200}.badge{font-size:12px;font-weight:700;background:#fff1cf;border-radius:30px;padding:5px 12px}
+    main{max-width:580px;margin:48px auto;padding:0 20px 48px}.eyebrow{letter-spacing:2px;font-size:12px;font-weight:800;color:#626262}h1{font-size:34px;line-height:1.15;letter-spacing:-1px;margin:12px 0 16px}p{color:#535353;margin:0 0 24px}
+    .card{background:#fff;border:1px solid #e7e7e7;border-radius:24px;overflow:hidden;margin:24px 0;box-shadow:0 8px 28px #00000004}.price{padding:28px;background:#171717;color:white}.price span{display:block;color:#c7c7c7;font-size:14px}.price strong{font-size:44px;letter-spacing:-1.5px}.price small{font-size:15px;margin-left:8px;color:#c7c7c7}
+    .content{padding:24px}.row{display:flex;justify-content:space-between;gap:16px;padding:12px 0}.line{border-bottom:1px solid #ededed}.hint{font-size:14px;color:#535353;margin-top:12px}.safe{background:#f5f5f5;border-radius:14px;padding:16px;margin:22px 0}.safe strong{display:block}.safe p{font-size:14px;margin:4px 0 0}
+    button,.button{display:block;width:100%;border:0;border-radius:14px;background:#171717;color:#fff;text-align:center;padding:18px 20px;font:700 17px system-ui;cursor:pointer;text-decoration:none}button:hover,.button:hover{background:#333}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #b67800;outline-offset:4px}a{color:#171717}.back{display:block;text-align:center;margin-top:16px;font-weight:600}.steps{font-size:13px;color:#666;text-align:center}.success{font-size:32px;width:64px;height:64px;border-radius:50%;background:#e5f5eb;color:#17623a;display:grid;place-items:center;margin-bottom:24px}
+    details{margin:22px 0;font-size:14px}summary{cursor:pointer;font-weight:700;padding:8px 0}code{font-family:monospace;overflow-wrap:anywhere}footer{text-align:center;font-size:12px;color:#666;margin-top:28px}@media(max-width:420px){main{margin-top:28px}h1{font-size:29px}header{padding:16px 20px}.content{padding:20px}}
+  </style>
+</head>
+<body>
+  <header><div class="brand">FIX<span>&amp;</span>GO</div><span class="badge">MODO DE PRUEBA</span></header>
+  <main>
+    {% if approved %}<div class="success" aria-label="Pago aprobado">✓</div>{% endif %}
+    <div class="eyebrow">TU SERVICIO, TODO CLARO</div>
+    <h1>{{ title }}</h1><p>{{ detail }}</p>
+    {% if attempt %}
+    <section class="card" aria-label="Resumen del pago">
+      <div class="price"><span>Total de la demostración</span><strong>{{ total }}</strong><small>CLP</small></div>
+      <div class="content">
+        <div class="row line"><span>Servicio acordado</span><strong>{{ service }}</strong></div>
+        <div class="row line"><span>Materiales aprobados</span><strong>{{ materials }}</strong></div>
+        <div class="hint">El total incluye el impuesto ilustrativo y la comisión. No se añade ningún cargo al continuar.</div>
+        <div class="safe"><strong>Dinero real que pagarás: $0</strong><p>Es una simulación de Transbank. Usa la tarjeta de prueba que aparece abajo, nunca tu tarjeta personal.</p></div>
+        <form method="post" action="https://webpay3gint.transbank.cl/webpayserver/initTransaction">
+          <input type="hidden" name="token_ws" value="{{ attempt.token }}">
+          <button type="submit">Continuar a Webpay de prueba →</button>
+        </form>
+        <details><summary>Ver datos oficiales para probar el pago</summary>
+          <div class="row line"><span>Visa de prueba</span><code>4051 8856 0044 6623</code></div>
+          <div class="row line"><span>CVV / vencimiento</span><span>123 / 11/28</span></div>
+          <div class="row line"><span>RUT de prueba</span><code>11.111.111-1</code></div>
+          <div class="row"><span>Clave de prueba</span><code>123</code></div>
+          <p>Son datos ficticios publicados por Transbank. En el simulador bancario elige «Aceptar» para aprobar.</p>
+        </details>
+        <div class="steps">Cotización aceptada → Pago → Chat disponible</div>
+      </div>
+    </section>
+    {% else %}
+      <div class="safe"><strong>No se ha cobrado dinero real.</strong><p>{% if approved %}El chat ya está habilitado. Coordina el trabajo con el prestador desde tu solicitud.{% else %}Revisa el estado desde tu solicitud. Si el pago fue rechazado o cancelado, puedes volver a intentarlo.{% endif %}</p></div>
+    {% endif %}
+    <p class="hint">Vuelve a la pestaña de FIX&amp;GO que dejaste abierta para conservar tu sesión. El estado se actualizará automáticamente.</p>
+    <a class="{% if attempt %}back{% else %}button{% endif %}" href="{{ app_url }}">Abrir FIX&amp;GO</a>
+    <footer>FIX&amp;GO · MVP académico · Santiago, Chile<br>Este comprobante no tiene validez tributaria.</footer>
+  </main>
+</body></html>
