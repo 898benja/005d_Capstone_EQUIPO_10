@@ -16,7 +16,7 @@
 
 ## ÍNDICE
 1. Introducción y propósito del Product Backlog
-2. Metodología de trabajo ágil (Kanban y Scrum adaptado)
+2. Metodología de trabajo ágil
 3. Organización del Product Backlog
 4. Historias de usuario priorizadas
 5. Matriz de priorización
@@ -35,11 +35,11 @@
 Proyecto de desarrollo de software desde cero (MVP), implementado bajo una arquitectura de **monolito modular** con un backend en **Django REST Framework (Python)** utilizando SQLite como persistencia relacional local, y un cliente multiplataforma desarrollado en **React Native con Expo y TypeScript** (compatible con iOS, Android y Web).
 
 ### Descripción del producto
-**Fix&Go** es un ecosistema digital diseñado para conectar de manera segura, directa y transparente a propietarios y residentes de hogares con especialistas técnicos calificados (en rubros críticos como **Agua/Gasfitería, Electricidad y Gas**). El sistema resuelve la informalidad y la desconfianza del mercado tradicional mediante un flujo transaccional controlado: solicitud geolocalizada por comuna, cotización formal, aceptación atómica protegida contra condiciones de carrera, aprobación granular de materiales adicionales en terreno, liquidación financiera inmutable en servidor (con un **modelo de retención del 30% como margen institucional para Fix&Go** y un sistema de **bonos por desempeño semanal para los prestadores**), y apertura controlada del chat interno únicamente tras registrar el pago de demostración académica.
+**Fix&Go** conecta a clientes residenciales con prestadores de Agua/Gasfitería, Electricidad y Gas mediante un flujo trazable: búsqueda geográfica, solicitud, cotización, aprobación de materiales, pago de prueba, chat protegido, evidencia del trabajo, confirmación, valoración y gestión de reclamos. El servidor calcula una comisión del 30% sobre el valor del servicio. Los materiales aprobados se transfieren íntegramente al prestador. El MVP no procesa dinero real ni emite documentos tributarios.
 
 ### Usuario principal y actores del ecosistema
 * **Cliente (Solicitante):** Actor que busca especialistas, crea solicitudes, acepta cotizaciones, aprueba materiales extras, ejecuta el pago demo y valora el servicio.
-* **Prestador (Especialista):** Actor que configura su perfil técnico, emite cotizaciones vinculantes, gestiona el avance de la obra, propone insumos adicionales y accede a bonos semanales por productividad.
+* **Prestador (Especialista):** Actor que configura su perfil técnico, emite cotizaciones, gestiona el avance del trabajo y propone insumos adicionales. Los bonos semanales son una idea de evolución y no forman parte del MVP actual.
 
 ### Objetivo del Product Backlog
 Organizar y priorizar las funcionalidades necesarias para construir y validar el MVP de **Fix&Go**, permitiendo planificar las iteraciones del equipo mediante historias de usuario plenamente trazables que entregan valor incremental alineado con los requerimientos académicos de Duoc UC.
@@ -47,10 +47,10 @@ Organizar y priorizar las funcionalidades necesarias para construir y validar el
 ---
 
 ## 2. Metodología de trabajo
-El proyecto se desarrolla bajo un enfoque ágil adaptado a los tiempos del curso Capstone, utilizando tableros Kanban (Trello) y reuniones de coordinación semanal presenciales los días miércoles, además de seguimiento diario entre los integrantes. Las iteraciones se agrupan en cuatro grandes fases:
+El proyecto utiliza **Scrum adaptado al contexto académico**. El Product Backlog ordena el trabajo; cada iteración selecciona un Sprint Backlog, define un objetivo y termina con revisión y retrospectiva. Trello se utiliza como tablero Kanban para visualizar el flujo de las tareas y GitHub conserva código, documentos y evidencia. Las iteraciones se alinean con las fases del curso:
 * **Fase 1 (Semanas 1–4):** Definición del problema, alcance, restricciones y modelado de datos relacional.
 * **Fase 2 (Semanas 5–12):** Desarrollo del monolito modular en Django, configuración de vistas móviles en React Native y endurecimiento de la autenticación por token.
-* **Fase 3 (Semanas 13–15):** Pruebas de integración HTTP real (91 tests ejecutados), validación de casos borde y estabilización del flujo de pagos y materiales.
+* **Fase 3 (Semanas 13–15):** Pruebas automatizadas (82 backend y 12 móviles), validación de casos borde y estabilización del flujo de pagos y materiales.
 * **Fase 4 (Semanas 16–18):** Ensayos generales en dispositivos físicos, consolidación de evidencias en GitHub y defensa del proyecto.
 
 ---
@@ -125,8 +125,8 @@ El Product Backlog se estructura en Épicas funcionales, Historias de Usuario (H
 
 ---
 
-### Épica 4: Materiales Adicionales, Liquidación Financiera y Modelo de Negocio (`billing`)
-*Controla los insumos extras en terreno, el bloqueo de checkout, el margen institucional del 30% y los bonos semanales.*
+### Épica 4: Materiales Adicionales y Liquidación Financiera (`billing`)
+*Controla los insumos extras, el bloqueo de checkout y la comisión del 30% sobre el valor del servicio.*
 
 #### **HU-06: Gestión y Aprobación de Materiales Adicionales**
 * **Como** prestador y cliente,
@@ -138,14 +138,14 @@ El Product Backlog se estructura en Épicas funcionales, Historias de Usuario (H
   2. La API bloquea preventivamente cualquier intento de realizar el *checkout* mientras existan materiales en estado pendiente de aprobación.
   3. El cliente debe aprobar o rechazar cada ítem individualmente antes de recalcular el cobro final.
 
-#### **HU-07: Cálculo Inmutable de Liquidación y Margen 30%**
+#### **HU-07: Cálculo Inmutable de Liquidación y Comisión 30%**
 * **Como** administrador de la plataforma,
-* **quiero** que el servidor Django calcule automáticamente el total sumando el servicio y los materiales aprobados, congelando una copia inmutable (*snapshot*) que destine el **30% de margen institucional a Fix&Go** y el **70% al prestador**,
+* **quiero** que el servidor Django calcule automáticamente el total, congele una copia inmutable (*snapshot*) y aplique el **30% de comisión solo al valor del servicio**,
 * **para** garantizar la sostenibilidad financiera del negocio.
 * **Prioridad:** Alta
 * **Criterios de Aceptación:**
   1. El cliente nunca envía el monto total por la petición; el servidor calcula y congela los valores de Neto e IVA ilustrativo (19%).
-  2. El sistema separa internamente la retención operativa del 30% para Fix&Go y el abono del 70% para el prestador.
+  2. El sistema asigna a Fix&Go el 30% del servicio y al prestador el 70% restante del servicio más el 100% de los materiales aprobados.
   3. El flujo de pago se ejecuta mediante una simulación académica controlada (`DEMO_PAID`) que emite un comprobante sin validez tributaria.
 
 #### **HU-08: Bonos por Desempeño Semanal para Prestadores**
@@ -153,6 +153,7 @@ El Product Backlog se estructura en Épicas funcionales, Historias de Usuario (H
 * **quiero** acumular bonificaciones económicas basadas en la cantidad y calidad de trabajos semanales completados,
 * **para** recibir incentivos de retención y productividad dentro de la plataforma.
 * **Prioridad:** Media
+* **Estado:** Futuro; fuera del alcance del MVP evaluado.
 * **Criterios de Aceptación:**
   1. El sistema procesa de forma periódica el conteo de servicios completados por cada prestador durante el ciclo semanal.
   2. Al superar el umbral establecido, se registra automáticamente el bono correspondiente asociado al perfil del especialista.
@@ -192,8 +193,8 @@ El Product Backlog se estructura en Épicas funcionales, Historias de Usuario (H
 | **HU-04** | Services | Creación de solicitudes | Alta | Punto de partida del recorrido operativo del MVP. |
 | **HU-05** | Services | Cotización y aceptación atómica | Alta | Crítico para evitar condiciones de carrera mediante `transaction.atomic` y códigos 409. |
 | **HU-06** | Billing | Gestión de materiales y bloqueo | Media | Evita cobros sorpresivos; exige aprobación explícita antes de permitir el checkout. |
-| **HU-07** | Billing | Liquidación inmutable y margen 30% | Alta | Resguarda la lógica financiera en servidor, congelando el snapshot y el desglose 30/70. |
-| **HU-08** | Billing | Bonos semanales por desempeño | Media | Estímulo de retención y productividad para los prestadores activos. |
+| **HU-07** | Billing | Liquidación inmutable y comisión 30% | Alta | Resguarda la lógica financiera en servidor; la comisión se calcula sobre el servicio y excluye materiales. |
+| **HU-08** | Billing | Bonos semanales por desempeño | Futura | Idea de evolución; no se implementa ni se presenta como parte del MVP actual. |
 | **HU-09** | Core | Desbloqueo de chat post-pago | Media | Mecanismo anti-fuga para retener la interacción dentro de la plataforma. |
 | **HU-10** | Services | Valoración de servicio (1-5★) | Media | Cierra el ciclo operativo consolidando la reputación del especialista. |
 
@@ -203,7 +204,7 @@ El Product Backlog se estructura en Épicas funcionales, Historias de Usuario (H
 
 ### Definición de Listo (DoR)
 Una historia de usuario puede tomarse en un sprint cuando:
-1. Cuenta con criterios de aceptación claros acordados con el Product Owner (Daniel Baeza).
+1. Cuenta con criterios de aceptación claros y revisados por el equipo.
 2. Se encuentra vinculada a las pantallas de la interfaz móvil en React Native / Expo.
 3. Tiene definido el endpoint bajo `/api/v1/` y el contrato de datos serializados en Django.
 4. Ha sido estimada y desglosada por el equipo técnico.
@@ -211,7 +212,7 @@ Una historia de usuario puede tomarse en un sprint cuando:
 ### Definición de Terminado (DoD)
 Una historia se considera completamente finalizada cuando:
 1. El código backend y frontend está integrado en el repositorio oficial de Git sin romper la compilación.
-2. Supera las pruebas automatizadas de servidor e integración HTTP real (respaldado por los 91 tests ejecutados).
+2. Supera las pruebas automatizadas aplicables (82 backend y 12 móviles en el corte del 04-11-2026).
 3. Fue verificada visualmente en el flujo operativo de la aplicación.
 4. No genera errores en consola ni datos de prueba inconsistentes.
 
@@ -221,9 +222,9 @@ Una historia se considera completamente finalizada cuando:
 
 | Rol en el Equipo | Responsabilidad frente al Backlog |
 | :--- | :--- |
-| **Product Owner** — Daniel Baeza | Prioriza las historias, valida que los requerimientos reflejen las necesidades reales de los clientes y prestadores, y ajusta la planificación según la rúbrica de Duoc UC. |
+| **Gestión del producto** — equipo, coordinado documentalmente por Daniel Baeza | Revisa prioridades, alcance y coherencia con la rúbrica. La aceptación de cambios relevantes requiere acuerdo del equipo. |
 | **Desarrollador Principal** — Benjamín Olmedo | Estima la complejidad técnica en Django REST Framework, SQLite y React Native; asegura la integridad transaccional y el modelo financiero (30/70). |
-| **QA y Testing** — Felipe Arce | Diseña y ejecuta los casos de prueba (unidades, cliente HTTP simulado e integración real), asegurando que cada historia cumpla con los estándares de calidad del MVP. |
+| **QA y evidencias** — Felipe Arce | Prepara casos manuales y evidencias. Las pruebas solo se declaran ejecutadas cuando existe registro de fecha, entorno, resultado y autor. |
 
 ---
 
@@ -231,4 +232,4 @@ Una historia se considera completamente finalizada cuando:
 * **Monolito Modular:** Arquitectura de software donde todo el sistema reside en un único proceso (Django), pero estrictamente dividido en módulos independientes (`accounts`, `catalog`, `services`, `billing`).
 * **Transacción Atómica (`transaction.atomic`):** Bloque de ejecución en base de datos donde todas las operaciones se realizan con éxito o se revierten por completo si una falla.
 * **Snapshot:** Copia inmutable de los montos financieros calculados en el servidor que evita alteraciones maliciosas en el cliente.
-* **Modelo 30/70:** Esquema comercial donde el 30% del monto total retenido por la pasarela constituye el margen operativo para Fix&Go, y el 70% se transfiere al prestador.
+* **Modelo de comisión:** Fix&Go recibe el 30% del valor del servicio. El prestador recibe el 70% del servicio y el 100% de los materiales aprobados. El MVP demuestra el cálculo con pagos de prueba.
