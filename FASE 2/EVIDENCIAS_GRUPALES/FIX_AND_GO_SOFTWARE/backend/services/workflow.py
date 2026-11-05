@@ -63,8 +63,15 @@ def decide_quote(sr, target):
 
 @transaction.atomic
 def cancel_request(sr):
-    _change(sr.pk, ['PENDING', 'QUOTED'], ServiceRequest.Status.CANCELLED)
-    Quote.objects.filter(service_request_id=sr.pk, status=Quote.Status.SUBMITTED).update(
+    # Cancelar antes del cobro también es válido tras aceptar una cotización.
+    # El bloqueo se comparte con checkout: nunca cancelar un pago aprobado.
+    from billing.models import PaymentOrder
+    _change(sr.pk, ['PENDING', 'QUOTED', 'ACCEPTED'], ServiceRequest.Status.CANCELLED)
+    if PaymentOrder.objects.filter(service_request_id=sr.pk, status__in=['DEMO_PAID', 'DEMO_REFUNDED']).exists():
+        raise StateConflict('El servicio tiene un pago. Utiliza el reclamo para solicitar revisión y reembolso.')
+    if PaymentOrder.objects.filter(service_request_id=sr.pk, webpay_attempts__finished=False).exists():
+        raise StateConflict('Termina o cancela el pago pendiente en Webpay antes de cancelar la solicitud.')
+    Quote.objects.filter(service_request_id=sr.pk, status__in=[Quote.Status.SUBMITTED, Quote.Status.ACCEPTED]).update(
         status=Quote.Status.WITHDRAWN, updated_at=timezone.now(),
     )
     # Refrescar evita serializar el objeto prefetched anterior a la transacción.

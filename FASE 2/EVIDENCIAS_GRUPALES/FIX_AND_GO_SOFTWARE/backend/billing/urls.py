@@ -2,7 +2,11 @@ from django.urls import path
 from . import views
 from .wallet import demo_card
 from .disputes import dispute, review
+from . import webpay
 urlpatterns = [
+    path('requests/<int:pk>/payment/webpay/', webpay.start, name='webpay-start'),
+    path('webpay/launch/', webpay.launch, name='webpay-launch'),
+    path('webpay/return/', webpay.returned, name='webpay-return'),
     path('requests/<int:pk>/dispute/', dispute, name='service-dispute'),
     path('admin/disputes/<int:pk>/review/', review, name='dispute-review'),
     path('wallet/demo-card/', demo_card, name='demo-card'),

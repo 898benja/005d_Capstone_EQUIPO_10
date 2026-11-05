@@ -43,6 +43,7 @@ function MobileApp() {
   const lock = useRef(false);
   const [error, setError] = useState("");
   const [connected, setConnected] = useState(false);
+  const [publicInfo, setPublicInfo] = useState(false);
   const [tab, setTab] = useState<Tab>("explore");
   const [route, setRoute] = useState<Route>(null);
   const scroll = useRef<ScrollView>(null);
@@ -219,6 +220,8 @@ function MobileApp() {
             {!session ? (
               <>
                 <Access run={run} busy={busy} onSession={onSession} />
+                <Button secondary label={publicInfo ? 'Ocultar información del MVP' : 'Información, condiciones y privacidad'} onPress={() => setPublicInfo(!publicInfo)}/>
+                {publicInfo && <Information/>}
                 <Button
                   secondary
                   busy={busy}

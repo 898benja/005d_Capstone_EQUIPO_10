@@ -160,6 +160,7 @@ CORS_ALLOW_CREDENTIALS = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {'payment_tokens': {'()': 'core.log_filters.PaymentTokenFilter'}},
     'formatters': {
         'verbose': {
             'format': '[{asctime}] {levelname} {name} {message}',
@@ -170,9 +171,11 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
+            'filters': ['payment_tokens'],
         },
     },
     'loggers': {
+        'django.server': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
         # Log de la aplicación
         'accounts': {
             'handlers': ['console'],
@@ -205,6 +208,10 @@ LOGGING = {
 
 # No habilita cobros reales. Requiere opt-in explícito y DEBUG para la demostración.
 PAYMENTS_DEMO_ENABLED = os.environ.get('PAYMENTS_DEMO_ENABLED', 'false').lower() == 'true'
+WEBPAY_INTEGRATION_ENABLED = os.environ.get('WEBPAY_INTEGRATION_ENABLED', 'false').lower() == 'true'
+# Explicit callback origin; never derive a redirect from untrusted request headers.
+WEBPAY_RETURN_URL = os.environ.get('WEBPAY_RETURN_URL', '')
+WEBPAY_APP_URL = os.environ.get('WEBPAY_APP_URL', 'http://localhost:8091/')
 # Tasa ilustrativa, no determina el tratamiento tributario del comercio.
 DEMO_VAT_PERCENT = int(os.environ.get('DEMO_VAT_PERCENT', '19'))
 

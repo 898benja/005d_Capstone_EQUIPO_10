@@ -39,7 +39,7 @@ class RequestWorkflowTests(APITestCase):
         self.sr.refresh_from_db()
         self.assertEqual(self.sr.status, 'ACCEPTED')
         self.assertEqual(Quote.objects.get().status, 'ACCEPTED')
-        self.assertEqual(self.post_as(self.customer, 'request-cancel').status_code, 409)
+        self.assertEqual(self.post_as(self.customer, 'request-cancel').status_code, 200)
 
     def test_cancellation_prevents_accept(self):
         self.quote()
